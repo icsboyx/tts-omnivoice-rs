@@ -47,7 +47,7 @@ Choose the CUDA architecture from the compute capability:
 | Ada | `89` | RTX 40 series |
 | Blackwell | `120a` | RTX 50 series |
 
-Pascal cards need CUDA 12.x; CUDA 13 removed Pascal build support. On Ubuntu/Debian or Fedora, set up NVIDIA's repository for your distribution release, then install the versioned `cuda-toolkit-12-9` package. On Arch, the rolling [`cuda` package](https://archlinux.org/packages/extra/x86_64/cuda/) may be CUDA 13; for Pascal install a CUDA 12.x toolkit from NVIDIA and use its versioned `nvcc`. See the [NVIDIA CUDA Linux installation guide](https://docs.nvidia.com/cuda/archive/12.9.1/cuda-installation-guide-linux/index.html), [NVIDIA's GPU tables](https://developer.nvidia.com/cuda/gpus) and the [legacy GPU table](https://developer.nvidia.com/cuda/gpus/legacy). Match the host GCC version to the toolkit's supported compiler range. Only the RTX 4060 Ti (`89`) has been tested by the maintainers.
+Pascal cards need CUDA 12.x; CUDA 13 removed Pascal build support. On Ubuntu/Debian or Fedora, set up NVIDIA's repository for your distribution release, then install the versioned `cuda-toolkit-12-9` package. On Arch, the rolling [`cuda` package](https://archlinux.org/packages/extra/x86_64/cuda/) may be CUDA 13; for Pascal install a CUDA 12.x toolkit from NVIDIA and use its versioned `nvcc`. See the [NVIDIA CUDA Linux installation guide](https://docs.nvidia.com/cuda/archive/12.9.1/cuda-installation-guide-linux/index.html), [NVIDIA's GPU tables](https://developer.nvidia.com/cuda/gpus) and the [legacy GPU table](https://developer.nvidia.com/cuda/gpus/legacy). Match the host GCC version to the toolkit's supported compiler range. Tested by the maintainers: RTX 4060 Ti (`89`), and GTX 1070 Ti (`61`) with CUDA 12.9 in the [Pascal container](../docker-compose/nvidia-gtx-10-pascal/README.md).
 
 ### 2. Obtain the supported source
 
@@ -85,6 +85,15 @@ ARCH=89
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOMNIVOICE_SHARED=ON -DGGML_CUDA=ON -DGGML_CUDA_NCCL=OFF -DCMAKE_CUDA_ARCHITECTURES=$ARCH -DCUDAToolkit_ROOT=$CUDA -DCMAKE_CUDA_COMPILER=$CUDA/bin/nvcc -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON '-DCMAKE_BUILD_RPATH=$ORIGIN'
 cmake --build build --target omnivoice --parallel 4
 ```
+
+AMD or Intel GPU through Vulkan, for example integrated graphics. It needs the Vulkan headers and loader and the `glslc` shader compiler; on Ubuntu/Debian: `sudo apt install libvulkan-dev glslc spirv-headers`. The runtime needs a Vulkan driver such as Mesa (`mesa-vulkan-drivers`).
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOMNIVOICE_SHARED=ON -DGGML_VULKAN=ON -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON '-DCMAKE_BUILD_RPATH=$ORIGIN'
+cmake --build build --target omnivoice --parallel 4
+```
+
+The Vulkan build was tested on a Radeon 610M and a UHD Graphics 630, in containers. On both, the CPU was faster; see [Measured speed](../docker-compose/README.md#measured-speed).
 
 If CUDA rejects the system C++ compiler, add `-DCMAKE_CUDA_HOST_COMPILER=/absolute/path/to/compatible/g++` to the configure command. `GGML_CUDA_NCCL=OFF` avoids requiring NCCL.
 

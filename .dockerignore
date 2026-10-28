@@ -1,0 +1,5 @@
+# The image build needs only the Rust sources and the patch; models and voices are mounted.
+.git
+target
+xtts/models
+xtts/samples

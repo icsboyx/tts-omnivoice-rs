@@ -1,18 +1,21 @@
 # tts-omnivoice-rs
 
-This workspace provides two Rust libraries and a small example application for local speech synthesis with OmniVoice. The Rust crates link to a separately compiled OmniVoice C++ shared library. The GGUF models run on an NVIDIA GPU or CPU, depending on how that library was built.
+This workspace provides two Rust libraries and a small example application for local speech synthesis with OmniVoice. The Rust crates link to a separately compiled OmniVoice C++ shared library. The GGUF models run on an NVIDIA GPU (CUDA), an AMD or Intel GPU (Vulkan, or ROCm for AMD), or the CPU, depending on how that library was built.
 
 | Component | Purpose |
 | --- | --- |
 | [`xomnivoice/`](xomnivoice/README.md) | Rust wrapper around the OmniVoice C ABI, and the native library build instructions. |
 | [`xtts/`](xtts/README.md) | Voice catalog, reference caching, speed and pitch controls, and model download. |
 | `xtts_examples/` | Command-line synthesis and an HTTP server example. |
+| [`docker-compose/`](docker-compose/README.md) | Containers that build and run the server: one folder per NVIDIA or AMD GPU family, Intel and AMD integrated graphics, and CPU. |
 
 The repository does not distribute the OmniVoice C++ sources, CUDA, or prebuilt native libraries. Linux x86-64 is the only supported platform.
 
 ## Quick start
 
 1. **Build and install OmniVoice.** Follow [Install the native library](xomnivoice/README.md#install-the-native-library): build tools, the supported source commit, CMake for CPU or your GPU, then a system-wide installation or `OMNIVOICE_LIB_DIR`.
+
+   To only run the server, [Docker Compose](docker-compose/README.md) does steps 1 and 3 in a container; you still download the models in step 2.
 
 2. **Download the models** into `xtts/models/` as described in [Model files](xtts/README.md#model-files). The voice samples are already in `xtts/samples/`.
 
@@ -66,7 +69,7 @@ The device is chosen once, when the model loads. `XTTS_DEVICE` accepts a GGML de
 XTTS_DEVICE=CPU cargo run --locked -p xtts_examples --bin server
 ```
 
-The startup log then says `LM backend: CPU` and `PipelineCodec ... backend=CPU`. CPU synthesis is much slower: on the test host, a short request did not finish within 30 seconds.
+The startup log then says `LM backend: CPU` and `PipelineCodec ... backend=CPU`. CPU synthesis is much slower: "Ciao a tutti!" took 0.75 s on an RTX 4060 Ti and 19.6 s on a 16-thread Ryzen 9 7950X. The [measured speed table](docker-compose/README.md#measured-speed) compares all tested hardware.
 
 ## Security
 

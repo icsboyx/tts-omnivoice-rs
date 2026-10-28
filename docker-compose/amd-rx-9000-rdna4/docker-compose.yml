@@ -1,0 +1,29 @@
+# AMD Radeon RX 9000 series (RDNA 4): ROCm/HIP for gfx1200, gfx1201.
+name: tts-omnivoice-rs
+services:
+  tts:
+    build:
+      context: ../..
+      dockerfile: docker-compose/Dockerfile
+      args:
+        BACKEND: hip
+        GPU_TARGETS: "gfx1200;gfx1201"
+        BUILD_IMAGE: docker.io/rocm/dev-ubuntu-24.04:7.2.4-complete
+        RUNTIME_IMAGE: docker.io/rocm/dev-ubuntu-24.04:7.2.4-complete
+    image: tts-omnivoice-rs:amd-rx-9000-rdna4
+    ports:
+      # Loopback only: the server has no authentication.
+      - "127.0.0.1:8002:8002"
+    volumes:
+      - ../../xtts/models:/data/models:ro
+      - ../../xtts/samples:/data/samples:ro
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    # ROCm needs access to /dev/kfd and the render nodes. If the container
+    # cannot open them, add the host's numeric render GID: getent group render
+    group_add:
+      - video
+    # The server does not handle SIGTERM; an init process lets `docker compose down` stop it at once.
+    init: true
+    restart: unless-stopped

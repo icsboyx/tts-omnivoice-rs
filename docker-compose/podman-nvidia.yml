@@ -1,0 +1,8 @@
+# Podman ignores Compose's `deploy.resources` GPU request; it attaches NVIDIA GPUs by CDI name.
+# Use it with the NVIDIA folders, from inside one of them:
+#   podman compose -f docker-compose.yml -f ../podman-nvidia.yml up -d --build
+# Requires a CDI specification: sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
+services:
+  tts:
+    devices:
+      - nvidia.com/gpu=all

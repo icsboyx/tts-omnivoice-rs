@@ -1,0 +1,26 @@
+# NVIDIA GeForce GTX 10 series (Pascal): CUDA architecture 61.
+name: tts-omnivoice-rs
+services:
+  tts:
+    build:
+      context: ../..
+      dockerfile: docker-compose/Dockerfile
+      args:
+        GPU_TARGETS: "61"
+    image: tts-omnivoice-rs:nvidia-gtx-10-pascal
+    ports:
+      # Loopback only: the server has no authentication.
+      - "127.0.0.1:8002:8002"
+    volumes:
+      - ../../xtts/models:/data/models:ro
+      - ../../xtts/samples:/data/samples:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # The server does not handle SIGTERM; an init process lets `docker compose down` stop it at once.
+    init: true
+    restart: unless-stopped

@@ -1,0 +1,23 @@
+# AMD Radeon integrated graphics (Ryzen APUs): Vulkan backend.
+name: tts-omnivoice-rs
+services:
+  tts:
+    build:
+      context: ../..
+      dockerfile: docker-compose/Dockerfile
+      args:
+        BACKEND: vulkan
+        BUILD_IMAGE: docker.io/library/ubuntu:24.04
+        RUNTIME_IMAGE: docker.io/library/ubuntu:24.04
+    image: tts-omnivoice-rs:amd-radeon-integrated
+    ports:
+      # Loopback only: the server has no authentication.
+      - "127.0.0.1:8002:8002"
+    volumes:
+      - ../../xtts/models:/data/models:ro
+      - ../../xtts/samples:/data/samples:ro
+    devices:
+      - /dev/dri:/dev/dri
+    # The server does not handle SIGTERM; an init process lets `docker compose down` stop it at once.
+    init: true
+    restart: unless-stopped
