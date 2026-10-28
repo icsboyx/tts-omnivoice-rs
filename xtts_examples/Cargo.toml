@@ -1,0 +1,31 @@
+[package]
+name = "xtts_examples"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish = false
+default-run = "server"
+
+[[bin]]
+name = "server"
+path = "server.rs"
+
+[[bin]]
+name = "synthesize"
+path = "synthesize.rs"
+
+[[bin]]
+name = "raw_synthesize"
+path = "raw_synthesize.rs"
+
+[dependencies]
+xtts = { version = "0.1.0", path = "../xtts" }
+xomnivoice = { version = "0.1.0", path = "../xomnivoice" }
+hound = "3.5.1"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+tiny_http = "0.12.0"
+uuid = { version = "1.29.0", features = ["serde", "v4"] }
+
+[build-dependencies]
+xomnivoice = { version = "0.1.0", path = "../xomnivoice" }

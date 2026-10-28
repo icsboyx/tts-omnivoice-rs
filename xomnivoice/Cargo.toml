@@ -1,0 +1,17 @@
+[package]
+name = "xomnivoice"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+description = "Rust bindings for the OmniVoice text-to-speech C ABI"
+readme = "README.md"
+keywords = ["tts", "speech", "omnivoice", "ffi"]
+categories = ["multimedia::audio", "api-bindings"]
+build = "build.rs"
+links = "omnivoice"
+
+[dependencies]
+hound = "3.5.1"
+
+[build-dependencies]
+bindgen = "0.73.2"
