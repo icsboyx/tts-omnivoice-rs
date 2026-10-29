@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo-wordmark.png" alt="tts-omnivoice-rs logo" width="700">
+</p>
+
 # tts-omnivoice-rs
 
 This workspace provides two Rust libraries and a small example application for local speech synthesis with OmniVoice. The Rust crates link to a separately compiled OmniVoice C++ shared library. The GGUF models run on an NVIDIA GPU (CUDA), an AMD or Intel GPU (Vulkan, or ROCm for AMD), or the CPU, depending on how that library was built.
